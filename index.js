@@ -8,19 +8,29 @@ function bruteForceHash() {
     console.log('Brute force process started...');
     const startTime = Date.now();
     let attempts = 0;
+    let intervalStart = Date.now();
+    let intervalAttempts = 0;
+
     const stack = [''];
+
+    const logInterval = setInterval(() => {
+        const elapsedTime = ((Date.now() - intervalStart) / 1000).toFixed(2);
+        const triesPerSecond = (intervalAttempts / elapsedTime).toFixed(2);
+        console.log(`[INFO] Time: ${((Date.now() - startTime) / 1000).toFixed(2)}s, Attempts: ${attempts}, Speed: ${triesPerSecond} tries/sec`);
+        intervalStart = Date.now();
+        intervalAttempts = 0;
+    }, 10000);
 
     while (stack.length > 0) {
         const current = stack.pop();
         attempts++;
+        intervalAttempts++;
 
         const hash = crypto.createHash('sha256').update(current).digest('hex');
-        const elapsedTime = ((Date.now() - startTime) / 1000).toFixed(2);
-
-        console.log(`Attempt: ${attempts}, Input: ${current}, Hash: ${hash}, Time: ${elapsedTime}s`);
 
         if (hash === targetHash) {
-            console.log(`Match found! Input: ${current}`);
+            clearInterval(logInterval);
+            console.log(`Match found! Input: ${current}, Attempts: ${attempts}, Time: ${((Date.now() - startTime) / 1000).toFixed(2)}s`);
             return;
         }
 
@@ -30,6 +40,8 @@ function bruteForceHash() {
             }
         }
     }
+
+    clearInterval(logInterval);
     console.log('No match found.');
 }
 
