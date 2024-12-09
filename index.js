@@ -27,6 +27,7 @@ function bruteForceHash(logInterval = 10000) {
     }
 
     if (hash === targetHash) {
+      const elapsedTime = ((Date.now() - startTime) / 1000).toFixed(2);
       console.log(`Match found! Input: ${current}, Attempts: ${attempts}, Time: ${elapsedTime}s`);
       return;
     }
