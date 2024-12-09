@@ -13,27 +13,27 @@ function bruteForceHash() {
 
     const stack = [''];
 
-    const logInterval = setInterval(() => {
-        const elapsedTime = ((Date.now() - intervalStart) / 1000).toFixed(2);
-        const triesPerSecond = (intervalAttempts / elapsedTime).toFixed(2);
-        console.log(`[INFO] Time: ${((Date.now() - startTime) / 1000).toFixed(2)}s, Attempts: ${attempts}, Speed: ${triesPerSecond} tries/sec`);
-        intervalStart = Date.now();
-        intervalAttempts = 0;
-    }, 10000);
-
     while (stack.length > 0) {
         const current = stack.pop();
         attempts++;
         intervalAttempts++;
 
+        // Hitung hash dari kombinasi saat ini
         const hash = crypto.createHash('sha256').update(current).digest('hex');
 
+        // Log setiap percobaan
+        const elapsedTime = ((Date.now() - startTime) / 1000).toFixed(2);
+        const triesPerSecond = (intervalAttempts / elapsedTime).toFixed(0);
+        console.log(`Attempt: ${attempts}, Input: ${current}, Hash: ${hash}, Time: ${elapsedTime}s Speed: ${triesPerSecond}/s`);
+
+        // Jika cocok, hentikan proses
         if (hash === targetHash) {
             clearInterval(logInterval);
-            console.log(`Match found! Input: ${current}, Attempts: ${attempts}, Time: ${((Date.now() - startTime) / 1000).toFixed(2)}s`);
+            console.log(`Match found! Input: ${current}, Attempts: ${attempts}, Time: ${elapsedTime}s`);
             return;
         }
 
+        // Tambahkan karakter berikutnya jika panjangnya belum mencapai maxLength
         if (current.length < maxLength) {
             for (let char of characters) {
                 stack.push(current + char);
